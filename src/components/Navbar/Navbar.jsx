@@ -1,46 +1,125 @@
-import React, {useState} from "react";
+import React, {useContext, useState, useEffect} from "react";
 import "./Navbar.css";
 import {assets} from "../../assets/frontend_assets/assets";
-const Navbar = () => {
+import {Link} from "react-router-dom";
+import {StoreContext} from "../../context/UseStoreContext";
+
+const Navbar = ({setShowLogin}) => {
   const [menu, setMenu] = useState("home");
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const {getTotalCartItems} = useContext(StoreContext);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const cartCount = getTotalCartItems();
+
   return (
-    <div className="navbar ">
-      <img src={assets.logo} alt="" className="logo" />
-      <ul className="navbar-menu">
-        <li
-          onClick={() => setMenu("home")}
-          className={menu === "home" ? "active" : ""}
-        >
-          home
-        </li>
-        <li
-          onClick={() => setMenu("menu")}
-          className={menu === "menu" ? "active" : ""}
-        >
-          menu
-        </li>
-        <li
-          onClick={() => setMenu("mobile-app")}
-          className={menu === "mobile-app" ? "active" : ""}
-        >
-          mobile-app
-        </li>
-        <li
-          onClick={() => setMenu("contact-us")}
-          className={menu === "contact-us" ? "active" : ""}
-        >
-          contact us
-        </li>
-      </ul>
-      <div className="navbar-right">
-        <img src={assets.search_icon} alt="" />
-        <div className="navbar-search-icon">
-          <img src={assets.basket_icon} alt="" />
-          <div className="dot"></div>
+    <nav className={`navbar ${scrolled ? "navbar--scrolled" : ""}`}>
+      <div className="navbar__inner">
+        <Link to="/" className="navbar__logo" onClick={() => setMenu("home")}>
+          <img src={assets.logo1} alt="Tomato" />
+        </Link>
+
+        <ul className="navbar__links">
+          {[
+            {label: "Home", key: "home", to: "/", hash: false},
+            {label: "Menu", key: "menu", to: "/#explore-menu", hash: true},
+            {
+              label: "Mobile App",
+              key: "mobile-app",
+              to: "/#app-download",
+              hash: true,
+            },
+            {label: "Contact", key: "contact-us", to: "/#footer", hash: true},
+          ].map(({label, key, to, hash}) => (
+            <li key={key}>
+              {hash ? (
+                <a
+                  href={to}
+                  onClick={() => setMenu(key)}
+                  className={menu === key ? "active" : ""}
+                >
+                  {label}
+                </a>
+              ) : (
+                <Link
+                  to={to}
+                  onClick={() => setMenu(key)}
+                  className={menu === key ? "active" : ""}
+                >
+                  {label}
+                </Link>
+              )}
+            </li>
+          ))}
+        </ul>
+
+        <div className="navbar__actions">
+          <button className="navbar__icon-btn" aria-label="Search">
+            <img src={assets.search_icon} alt="" width="20" />
+          </button>
+
+          <Link to="/cart" className="navbar__cart" aria-label="Cart">
+            <img src={assets.basket_icon} alt="" width="22" />
+            {cartCount > 0 && (
+              <span className="navbar__cart-badge">{cartCount}</span>
+            )}
+          </Link>
+
+          <button
+            className="btn-primary navbar__signin"
+            onClick={() => setShowLogin(true)}
+          >
+            Sign in
+          </button>
+
+          <button
+            className={`navbar__hamburger ${mobileOpen ? "open" : ""}`}
+            onClick={() => setMobileOpen((v) => !v)}
+            aria-label="Toggle menu"
+          >
+            <span />
+            <span />
+            <span />
+          </button>
         </div>
-        <button>sign in</button>
       </div>
-    </div>
+
+      {mobileOpen && (
+        <div className="navbar__mobile-drawer">
+          {[
+            {label: "Home", key: "home", to: "/"},
+            {label: "Menu", key: "menu", href: "#explore-menu"},
+            {label: "Mobile App", key: "mobile-app", href: "#app-download"},
+            {label: "Contact", key: "contact-us", href: "#footer"},
+          ].map(({label, key, to, href}) =>
+            to ? (
+              <Link key={key} to={to} onClick={() => setMenu(key)}>
+                {label}
+              </Link>
+            ) : (
+              <a key={key} href={href} onClick={() => setMenu(key)}>
+                {label}
+              </a>
+            ),
+          )}
+          <button
+            className="btn-primary"
+            onClick={() => {
+              setShowLogin(true);
+              setMobileOpen(false);
+            }}
+          >
+            Sign in
+          </button>
+        </div>
+      )}
+    </nav>
   );
 };
 
