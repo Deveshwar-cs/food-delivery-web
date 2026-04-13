@@ -1,7 +1,7 @@
 import React, {useContext} from "react";
 import "./PlaceOrder.css";
 import {StoreContext} from "../../context/UseStoreContext";
-import {formatINR} from "../../components/FoodItem/FoodItem";
+import {formatINR} from "../../uitls/formatINR";
 
 const DELIVERY_FEE = 49;
 

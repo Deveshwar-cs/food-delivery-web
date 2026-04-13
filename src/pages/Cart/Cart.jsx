@@ -2,7 +2,7 @@ import React, {useContext} from "react";
 import "./Cart.css";
 import {StoreContext} from "../../context/UseStoreContext";
 import {useNavigate} from "react-router";
-import {formatINR} from "../../components/FoodItem/FoodItem";
+import {formatINR} from "../../uitls/formatINR";
 
 const DELIVERY_FEE = 49; // ₹49 delivery fee
 
