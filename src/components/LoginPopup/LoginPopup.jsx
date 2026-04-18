@@ -1,9 +1,46 @@
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import "./LoginPopup.css";
 import {assets} from "../../assets/frontend_assets/assets";
+import {StoreContext} from "../../context/UseStoreContext";
+import axios from "axios";
 
 const LoginPopup = ({setShowLogin}) => {
   const [currState, setCurrState] = useState("Sign Up");
+  const {url, setToken} = useContext(StoreContext);
+  const [data, setData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const onChangeHandler = (event) => {
+    const name = event.target.name;
+    const value = event.target.value;
+    setData((data) => ({...data, [name]: value}));
+  };
+  const onLogin = async (e) => {
+    try {
+      e.preventDefault();
+      let newUrl = url;
+      if (currState === "Login") {
+        newUrl += "/api/user/login";
+      } else {
+        newUrl += "/api/user/register";
+      }
+
+      const response = await axios.post(newUrl, data);
+      if (response.data.success) {
+        setToken(response.data.token);
+        localStorage.setItem("token", response.data.token);
+        setShowLogin(false);
+      } else {
+        alert(response.data.message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div
       className="login-overlay"
@@ -33,25 +70,43 @@ const LoginPopup = ({setShowLogin}) => {
         </div>
 
         {/* Form */}
-        <form
-          className="login-modal__form"
-          onSubmit={(e) => e.preventDefault()}
-        >
+        <form className="login-modal__form" onSubmit={onLogin}>
           {currState === "Sign Up" && (
             <div className="login-field">
               <label>Full name</label>
-              <input type="text" placeholder="Rahul Sharma" required />
+              <input
+                type="text"
+                value={data.name}
+                name="name"
+                onChange={(e) => onChangeHandler(e)}
+                placeholder="Rahul Sharma"
+                required
+              />
             </div>
           )}
 
           <div className="login-field">
             <label>Email address</label>
-            <input type="email" placeholder="you@example.com" required />
+            <input
+              type="email"
+              name="email"
+              value={data.email}
+              onChange={(e) => onChangeHandler(e)}
+              placeholder="you@example.com"
+              required
+            />
           </div>
 
           <div className="login-field">
             <label>Password</label>
-            <input type="password" placeholder="••••••••" required />
+            <input
+              type="password"
+              name="password"
+              value={data.password}
+              onChange={(e) => onChangeHandler(e)}
+              placeholder="••••••••"
+              required
+            />
           </div>
 
           {/* Terms */}

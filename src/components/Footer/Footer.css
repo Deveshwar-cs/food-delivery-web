@@ -119,12 +119,12 @@
     flex-direction: column;
     gap: 30px;
   }
-
-  .footer-content-left img {
-    width: 130px;
-  }
-
   .footer-content-left p {
     font-size: 13px;
+  }
+}
+@media (max-width: 600px) {
+  .footer-social-icons {
+    gap: 8px;
   }
 }

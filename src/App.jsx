@@ -6,6 +6,8 @@ import Cart from "./pages/Cart/Cart.jsx";
 import PlaceOrder from "./pages/PlaceOrder/PlaceOrder.jsx";
 import Footer from "./components/Footer/Footer.jsx";
 import LoginPopup from "./components/LoginPopup/LoginPopup.jsx";
+import ScrollToTop from "./components/ScrollToTop.jsx";
+import MyOrder from "./pages/MyOrders/MyOrder.jsx";
 
 const App = () => {
   const [showLogin, setShowLogin] = useState(false);
@@ -20,6 +22,7 @@ const App = () => {
 
   return (
     <>
+      <ScrollToTop />
       {/* ✅ Clean conditional render */}
       {showLogin && <LoginPopup setShowLogin={setShowLogin} />}
       <div className="app">
@@ -28,6 +31,7 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/order" element={<PlaceOrder />} />
+          <Route path="/myorders" element={<MyOrder />} />
         </Routes>
       </div>
       <Footer />

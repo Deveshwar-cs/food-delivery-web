@@ -250,3 +250,87 @@
     width: 110px;
   }
 }
+
+/* ── Profile / Dropdown ── */
+.navbar-profile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.navbar-profile > img {
+  width: 38px;
+  height: 38px;
+  object-fit: cover;
+  padding: 6px;
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+}
+
+.navbar-profile:hover > img {
+  background: var(--clr-surface-2);
+}
+
+/* Dropdown */
+.nav-profile-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%; /* no gap — flush to the icon */
+  right: 0;
+  min-width: 160px;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 6px;
+  list-style: none;
+  z-index: 999;
+}
+
+.navbar-profile:hover .nav-profile-dropdown {
+  display: block; /* instant open, no delay */
+}
+
+/* invisible bridge so moving cursor down doesn't close it */
+.nav-profile-dropdown::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 0;
+  right: 0;
+  height: 10px;
+}
+
+.nav-profile-dropdown li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm, 6px);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.nav-profile-dropdown li:hover {
+  background: var(--clr-surface-2);
+}
+
+.nav-profile-dropdown li img {
+  width: 16px;
+  height: 16px;
+  opacity: 0.6;
+}
+
+.nav-profile-dropdown li p {
+  font-size: 14px;
+  color: var(--clr-text);
+  font-weight: 400;
+  margin: 0;
+}
+
+.nav-profile-dropdown hr {
+  border: none;
+  border-top: 1px solid var(--clr-border);
+  margin: 4px 0;
+}

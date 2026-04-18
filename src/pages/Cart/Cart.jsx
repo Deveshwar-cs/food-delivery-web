@@ -7,7 +7,7 @@ import {formatINR} from "../../uitls/formatINR";
 const DELIVERY_FEE = 49; // ₹49 delivery fee
 
 const Cart = () => {
-  const {cartItems, food_list, removeFromCart, getTotalCartAmount} =
+  const {cartItems, food_list, removeFromCart, getTotalCartAmount, url} =
     useContext(StoreContext);
   const navigate = useNavigate();
 
@@ -52,7 +52,7 @@ const Cart = () => {
             {cartList.map((item) => (
               <div className="cart__row" key={item._id}>
                 <img
-                  src={item.image}
+                  src={url + "/images/" + item.image}
                   alt={item.name}
                   className="cart__item-img"
                 />

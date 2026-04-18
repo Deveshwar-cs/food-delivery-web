@@ -1,21 +1,32 @@
 import React, {useContext, useState, useEffect} from "react";
 import "./Navbar.css";
 import {assets} from "../../assets/frontend_assets/assets";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {StoreContext} from "../../context/UseStoreContext";
+import {User} from "lucide-react";
+import {ShoppingCart} from "lucide-react";
+import {Search} from "lucide-react";
+import {Handbag} from "lucide-react";
+import {LogOut} from "lucide-react";
 
 const Navbar = ({setShowLogin}) => {
   const [menu, setMenu] = useState("home");
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const {getTotalCartItems} = useContext(StoreContext);
+  const {getTotalCartItems, token, setToken} = useContext(StoreContext);
+  const navigate = useNavigate();
+  const logout = () => {
+    console.log("Hello");
+    localStorage.removeItem("token");
+    setToken("");
+    navigate("/");
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
   const cartCount = getTotalCartItems();
 
   return (
@@ -61,22 +72,42 @@ const Navbar = ({setShowLogin}) => {
 
         <div className="navbar__actions">
           <button className="navbar__icon-btn" aria-label="Search">
-            <img src={assets.search_icon} alt="" width="20" />
+            <Search />
           </button>
 
           <Link to="/cart" className="navbar__cart" aria-label="Cart">
-            <img src={assets.basket_icon} alt="" width="22" />
+            <ShoppingCart />
             {cartCount > 0 && (
               <span className="navbar__cart-badge">{cartCount}</span>
             )}
           </Link>
 
-          <button
-            className="btn-primary navbar__signin"
-            onClick={() => setShowLogin(true)}
-          >
-            Sign in
-          </button>
+          {!token ? (
+            <button
+              className="btn-primary"
+              onClick={() => {
+                setShowLogin(true);
+                setMobileOpen(false);
+              }}
+            >
+              Sign in
+            </button>
+          ) : (
+            <div className="navbar-profile">
+              <User />
+              <ul className="nav-profile-dropdown">
+                <li onClick={() => navigate("/myorders")}>
+                  <Handbag />
+                  <p>Orders</p>
+                </li>
+                <hr />
+                <li onClick={() => logout()}>
+                  <LogOut />
+                  <p>Logout</p>
+                </li>
+              </ul>
+            </div>
+          )}
 
           <button
             className={`navbar__hamburger ${mobileOpen ? "open" : ""}`}
@@ -108,15 +139,6 @@ const Navbar = ({setShowLogin}) => {
               </a>
             ),
           )}
-          <button
-            className="btn-primary"
-            onClick={() => {
-              setShowLogin(true);
-              setMobileOpen(false);
-            }}
-          >
-            Sign in
-          </button>
         </div>
       )}
     </nav>

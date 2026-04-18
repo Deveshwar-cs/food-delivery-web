@@ -5,13 +5,18 @@ import {StoreContext} from "../../context/UseStoreContext";
 import {formatINR} from "../../uitls/formatINR.js";
 
 const FoodItem = ({id, name, price, description, image}) => {
-  const {cartItems, addToCart, removeFromCart} = useContext(StoreContext);
+  const {cartItems, addToCart, removeFromCart, url} = useContext(StoreContext);
   const count = cartItems[id] || 0;
 
   return (
     <div className="food-item">
       <div className="food-item__img-wrap">
-        <img className="food-item__img" src={image} alt={name} loading="lazy" />
+        <img
+          className="food-item__img"
+          src={url + "/images/" + image}
+          alt={name}
+          loading="lazy"
+        />
 
         {/* Overlay gradient */}
         <div className="food-item__overlay" />
