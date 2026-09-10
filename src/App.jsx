@@ -8,11 +8,14 @@ import Footer from "./components/Footer/Footer.jsx";
 import LoginPopup from "./components/LoginPopup/LoginPopup.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import MyOrder from "./pages/MyOrders/MyOrder.jsx";
+import {useDarkMode} from "./hooks/useDarkMode.js"; // ← NEW
+import "./dark-mode.css";
 
 const App = () => {
   const [showLogin, setShowLogin] = useState(false);
+  const [isDark, toggleDark] = useDarkMode(); // ← NEW
 
-  // ✅ Overflow lock lives here, not inside LoginPopup
+  // Overflow lock lives here, not inside LoginPopup
   useEffect(() => {
     document.body.style.overflow = showLogin ? "hidden" : "";
     return () => {
@@ -23,10 +26,14 @@ const App = () => {
   return (
     <>
       <ScrollToTop />
-      {/* ✅ Clean conditional render */}
       {showLogin && <LoginPopup setShowLogin={setShowLogin} />}
       <div className="app">
-        <Navbar setShowLogin={setShowLogin} />
+        {/* Pass isDark + toggleDark down so Navbar can render the toggle button */}
+        <Navbar
+          setShowLogin={setShowLogin}
+          isDark={isDark} // ← NEW
+          onToggleDark={toggleDark} // ← NEW
+        />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/cart" element={<Cart />} />

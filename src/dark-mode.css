@@ -1,0 +1,477 @@
+/*
+ * dark-mode.css
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Import ONCE in your main entry CSS (e.g. index.css) after your :root block:
+ *   @import "./dark-mode.css";
+ *
+ * Uses Tailwind "class" strategy — applies when <html class="dark"> is present.
+ * Covers every component: Navbar, Header, ExploreMenu, FoodDisplay, FoodItem,
+ * AppDownload, LoginPopup, Cart, PlaceOrder, MyOrders, Footer.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+/* ── Smooth transition for the whole page swap ── */
+*,
+*::before,
+*::after {
+  transition:
+    background-color 300ms ease-in-out,
+    color 300ms ease-in-out,
+    border-color 300ms ease-in-out,
+    box-shadow 300ms ease-in-out;
+}
+
+/* ════════════════════════════════════════════════
+   DESIGN TOKENS — override every CSS variable
+   ════════════════════════════════════════════════ */
+:root.dark,
+.dark {
+  --clr-surface: #000000;
+  --clr-surface-2: #111111;
+  --clr-surface-rgb: 0, 0, 0;
+
+  --clr-text: #ffffff;
+  --clr-text-secondary: #bbbbbb;
+  --clr-text-muted: #888888;
+
+  --clr-border: rgba(255, 255, 255, 0.1);
+  --clr-border-strong: rgba(255, 255, 255, 0.18);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.8);
+
+  --clr-brand: #ff6b35;
+  --clr-brand-dark: #e55a28;
+  --clr-brand-light: rgba(255, 107, 53, 0.18);
+
+  --clr-input-bg: #000000;
+  --clr-input-border: rgba(255, 255, 255, 0.15);
+  --clr-input-focus: rgba(255, 107, 53, 0.35);
+
+  --clr-success-bg: rgba(74, 222, 128, 0.1);
+  --clr-success: #4ade80;
+
+  --navbar-scrolled-bg: rgba(0, 0, 0, 0.92);
+}
+
+/* ════════════════════════════════════════════════
+   GLOBAL BASE
+   ════════════════════════════════════════════════ */
+.dark body,
+.dark .app {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6 {
+  color: #ffffff;
+}
+
+.dark p {
+  color: #bbbbbb;
+}
+
+.dark hr {
+  border-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ════════════════════════════════════════════════
+   NAVBAR
+   ════════════════════════════════════════════════ */
+.dark .navbar {
+  background: transparent;
+}
+.dark .navbar--scrolled {
+  background: var(--navbar-scrolled-bg);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.dark .navbar__links a {
+  color: #bbbbbb;
+}
+.dark .navbar__links a:hover,
+.dark .navbar__links a.active {
+  color: #ffffff;
+}
+.dark .navbar__icon-btn {
+  color: #bbbbbb;
+}
+.dark .navbar__icon-btn:hover {
+  background: #111111;
+  color: #ffffff;
+}
+.dark .navbar__cart {
+  color: #bbbbbb;
+}
+.dark .navbar__cart:hover {
+  background: #111111;
+}
+.dark .navbar__hamburger span {
+  background: #ffffff;
+}
+.dark .navbar__mobile-drawer {
+  background: #000000;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.dark .navbar__mobile-drawer a {
+  color: #ffffff;
+}
+.dark .navbar__mobile-drawer a:hover {
+  background: #111111;
+}
+.dark .nav-profile-dropdown {
+  background: #111111;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.dark .nav-profile-dropdown li:hover {
+  background: #1a1a1a;
+}
+.dark .nav-profile-dropdown li p {
+  color: #ffffff;
+}
+
+/* ════════════════════════════════════════════════
+   EXPLORE MENU
+   ════════════════════════════════════════════════ */
+.dark .explore-menu__pill-img {
+  background: #111111;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.dark .explore-menu__pill span {
+  color: #bbbbbb;
+}
+.dark .explore-menu__pill:hover span {
+  color: #ffffff;
+}
+.dark .explore-menu__divider {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ════════════════════════════════════════════════
+   FOOD DISPLAY
+   ════════════════════════════════════════════════ */
+.dark .section-title {
+  color: #ffffff;
+}
+.dark .section-subtitle {
+  color: #888888;
+}
+.dark .food-display__empty {
+  background: #111111;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #888888;
+}
+
+/* ════════════════════════════════════════════════
+   FOOD ITEM CARDS
+   ════════════════════════════════════════════════ */
+.dark .food-item {
+  background: #111111;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+.dark .food-item__info {
+  background: #111111;
+}
+.dark .food-item__name {
+  color: #ffffff;
+}
+.dark .food-item__desc {
+  color: #888888;
+}
+.dark .food-item__price {
+  color: var(--clr-brand);
+}
+.dark .food-item__counter {
+  background: rgba(0, 0, 0, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.dark .food-item__counter span {
+  color: #ffffff;
+}
+
+/* ════════════════════════════════════════════════
+   APP DOWNLOAD SECTION
+   ════════════════════════════════════════════════ */
+.dark .app-download__content {
+  background: #111111;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+.dark .app-download__title {
+  color: #ffffff;
+}
+.dark .app-download__desc {
+  color: #bbbbbb;
+}
+.dark .app-download__phone-mockup {
+  background: #1a1a1a;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ════════════════════════════════════════════════
+   LOGIN POPUP
+   ════════════════════════════════════════════════ */
+.dark .login-overlay {
+  background: rgba(0, 0, 0, 0.75);
+}
+.dark .login-modal {
+  background: #111111;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.dark .login-modal__title {
+  color: #ffffff;
+}
+.dark .login-modal__sub {
+  color: #888888;
+}
+.dark .login-modal__close {
+  background: #1a1a1a;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+.dark .login-modal__close:hover {
+  background: #252525;
+}
+.dark .login-field label {
+  color: #bbbbbb;
+}
+.dark .login-field input {
+  background: #000000;
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+.dark .login-field input:focus {
+  border-color: var(--clr-brand);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.25);
+}
+.dark .login-field input::placeholder {
+  color: #555555;
+}
+.dark .login-modal__terms {
+  color: #888888;
+}
+.dark .login-modal__toggle {
+  color: #888888;
+}
+
+/* ════════════════════════════════════════════════
+   CART PAGE
+   ════════════════════════════════════════════════ */
+.dark .cart {
+  background: transparent;
+}
+.dark .cart__items,
+.dark .cart__summary,
+.dark .cart__promo {
+  background: #111111;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+}
+.dark .cart__table-head {
+  color: #888888;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+.dark .cart__row {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+.dark .cart__row:hover {
+  background: #1a1a1a;
+}
+.dark .cart__item-name {
+  color: #ffffff;
+}
+.dark .cart__item-price {
+  color: #bbbbbb;
+}
+.dark .cart__item-total {
+  color: #ffffff;
+}
+.dark .cart__item-qty {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+.dark .cart__remove {
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #888888;
+}
+.dark .cart__remove:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+.dark .cart__summary-title {
+  color: #ffffff;
+}
+.dark .cart__summary-row {
+  color: #bbbbbb;
+}
+.dark .cart__summary-row span:last-child {
+  color: #ffffff;
+}
+.dark .cart__summary-divider {
+  background: rgba(255, 255, 255, 0.08);
+}
+.dark .cart__summary-row--total {
+  color: #ffffff;
+}
+.dark .cart__promo-label {
+  color: #bbbbbb;
+}
+.dark .cart__promo-input {
+  background: #000000;
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+.dark .cart__promo-input:focus {
+  border-color: var(--clr-brand);
+  background: #000000;
+}
+.dark .cart__promo-input::placeholder {
+  color: #555555;
+}
+.dark .cart__empty p {
+  color: #bbbbbb;
+}
+
+/* ════════════════════════════════════════════════
+   PLACE ORDER PAGE
+   ════════════════════════════════════════════════ */
+.dark .place-order {
+  background: transparent;
+}
+.dark .place-order__left,
+.dark .order-summary {
+  background: #111111;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+}
+.dark .place-order__section-label {
+  color: #ffffff;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+.dark .form-field label {
+  color: #bbbbbb;
+}
+.dark .form-field input {
+  background: #000000;
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+.dark .form-field input:focus {
+  border-color: var(--clr-brand);
+  background: #000000;
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
+}
+.dark .form-field input::placeholder {
+  color: #555555;
+}
+.dark .order-summary__row {
+  color: #bbbbbb;
+}
+.dark .order-summary__row span:last-child {
+  color: #ffffff;
+}
+.dark .order-summary__divider {
+  background: rgba(255, 255, 255, 0.08);
+}
+.dark .order-summary__row--total {
+  color: #ffffff;
+}
+.dark .order-summary__payment-note {
+  background: rgba(74, 222, 128, 0.08);
+  color: #4ade80;
+}
+
+/* ════════════════════════════════════════════════
+   MY ORDERS PAGE
+   ════════════════════════════════════════════════ */
+.dark .my-orders {
+  background-color: #000000;
+  color: #ffffff;
+}
+.dark .my-orders h2 {
+  color: #ffffff;
+}
+.dark .no-orders {
+  color: #888888;
+}
+.dark .order-card {
+  background: #111111;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+.dark .order-header {
+  color: #ffffff;
+}
+.dark .status {
+  background: rgba(255, 159, 67, 0.15);
+  color: #ffb347;
+}
+.dark .order-items {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+.dark .item-name {
+  color: #ffffff;
+}
+.dark .order-item p {
+  color: #bbbbbb;
+}
+.dark .order-details {
+  color: #bbbbbb;
+}
+
+/* ════════════════════════════════════════════════
+   FOOTER
+   ════════════════════════════════════════════════ */
+.dark .footer,
+.dark footer {
+  background-color: #000000;
+  color: #bbbbbb;
+}
+.dark .footer-content-left p {
+  color: #888888;
+}
+.dark .footer-content-center h2,
+.dark .footer-content-right h2 {
+  color: #ffffff;
+}
+.dark .footer-content-center li,
+.dark .footer-content-right li {
+  color: #888888;
+}
+.dark .footer-content-center li:hover,
+.dark .footer-content-right li:hover {
+  color: #ffffff;
+}
+.dark .footer hr {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.dark .footer-copyright {
+  color: #555555;
+}
+
+/* ════════════════════════════════════════════════
+   GENERIC INPUT CATCH-ALL
+   ════════════════════════════════════════════════ */
+.dark input,
+.dark select,
+.dark textarea {
+  background: #000000;
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+  border-color: var(--clr-brand);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.25);
+  outline: none;
+}
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #555555;
+}

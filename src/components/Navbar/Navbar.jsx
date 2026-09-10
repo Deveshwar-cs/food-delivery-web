@@ -3,20 +3,19 @@ import "./Navbar.css";
 import {assets} from "../../assets/frontend_assets/assets";
 import {Link, useNavigate} from "react-router-dom";
 import {StoreContext} from "../../context/UseStoreContext";
-import {User} from "lucide-react";
-import {ShoppingCart} from "lucide-react";
-import {Search} from "lucide-react";
+import {User, ShoppingCart, Search, LogOut} from "lucide-react";
 import {Handbag} from "lucide-react";
-import {LogOut} from "lucide-react";
+import DarkModeToggle from "../DarkModeToggle.jsx"; // ← NEW
 
-const Navbar = ({setShowLogin}) => {
+// Props: setShowLogin (existing) + isDark, onToggleDark (new)
+const Navbar = ({setShowLogin, isDark, onToggleDark}) => {
   const [menu, setMenu] = useState("home");
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const {getTotalCartItems, token, setToken} = useContext(StoreContext);
   const navigate = useNavigate();
+
   const logout = () => {
-    console.log("Hello");
     localStorage.removeItem("token");
     setToken("");
     navigate("/");
@@ -27,6 +26,7 @@ const Navbar = ({setShowLogin}) => {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
   const cartCount = getTotalCartItems();
 
   return (
@@ -72,11 +72,14 @@ const Navbar = ({setShowLogin}) => {
 
         <div className="navbar__actions">
           <button className="navbar__icon-btn" aria-label="Search">
-            <Search />
+            <Search size={18} />
           </button>
 
+          {/* ── Dark mode toggle ── */}
+          <DarkModeToggle isDark={isDark} onToggle={onToggleDark} />
+
           <Link to="/cart" className="navbar__cart" aria-label="Cart">
-            <ShoppingCart />
+            <ShoppingCart size={18} />
             {cartCount > 0 && (
               <span className="navbar__cart-badge">{cartCount}</span>
             )}
@@ -101,7 +104,7 @@ const Navbar = ({setShowLogin}) => {
                   <p>Orders</p>
                 </li>
                 <hr />
-                <li onClick={() => logout()}>
+                <li onClick={logout}>
                   <LogOut />
                   <p>Logout</p>
                 </li>

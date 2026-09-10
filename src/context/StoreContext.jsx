@@ -2,7 +2,7 @@ import {useEffect, useState, useCallback} from "react";
 import {StoreContext} from "./UseStoreContext";
 import axios from "axios";
 
-const BASE_URL = "http://localhost:4000";
+const BASE_URL = "http://localhost:5000";
 
 // Axios instance with default config
 const api = axios.create({

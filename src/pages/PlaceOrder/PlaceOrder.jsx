@@ -1,9 +1,13 @@
 import React, {useContext, useState} from "react";
+
 import "./PlaceOrder.css";
+
 import {StoreContext} from "../../context/UseStoreContext";
+
 import {formatINR} from "../../uitls/formatINR";
-import {IterationCcw} from "lucide-react";
+
 import axios from "axios";
+
 import {useNavigate} from "react-router";
 
 const DELIVERY_FEE = 49;
@@ -11,7 +15,9 @@ const DELIVERY_FEE = 49;
 const PlaceOrder = () => {
   const {getTotalCartAmount, token, food_list, cartItems, url, setCartItems} =
     useContext(StoreContext);
+
   const navigate = useNavigate();
+
   const [data, setData] = useState({
     firstName: "",
     lastName: "",
@@ -24,101 +30,228 @@ const PlaceOrder = () => {
     phone: "",
   });
 
+  // ========================================
+  // HANDLE INPUT CHANGE
+  // ========================================
+
   const onChangeHandler = (event) => {
     const name = event.target.name;
     const value = event.target.value;
-    setData((data) => ({...data, [name]: value}));
+
+    setData((previousData) => ({
+      ...previousData,
+      [name]: value,
+    }));
   };
 
+  // ========================================
+  // CALCULATE TOTAL
+  // ========================================
+
   const subtotal = getTotalCartAmount();
+
   const total = subtotal + DELIVERY_FEE;
+
+  // ========================================
+  // PLACE ORDER
+  // ========================================
 
   const placeOrder = async (event) => {
     event.preventDefault();
 
     try {
-      let orderItems = [];
+      // ----------------------------------------
+      // 1. Create order items
+      // ----------------------------------------
+
+      const orderItems = [];
 
       food_list.forEach((item) => {
         if (cartItems[item._id] > 0) {
-          let itemInfo = {...item};
-          itemInfo["quantity"] = cartItems[item._id];
+          const itemInfo = {
+            ...item,
+            quantity: cartItems[item._id],
+          };
+
           orderItems.push(itemInfo);
         }
       });
 
-      // ✅ FIXED amount
-      let orderData = {
+      // ----------------------------------------
+      // 2. Prepare order data
+      // ----------------------------------------
+
+      const orderData = {
         address: data,
         items: orderItems,
         amount: total,
       };
 
-      let response = await axios.post(url + "/api/order/place", orderData, {
-        headers: {token},
+      console.log("Sending order:", orderData);
+
+      // ----------------------------------------
+      // 3. Ask backend to create Razorpay order
+      // ----------------------------------------
+
+      const response = await axios.post(`${url}/api/order/place`, orderData, {
+        headers: {
+          token,
+        },
       });
 
-      if (response.data.success) {
-        const {razorpayOrder} = response.data;
-        console.log(razorpayOrder.key);
-        const options = {
-          key: "rzp_test_Sea6zI0Uc4H9w5", // 🔥 replace this
-          amount: razorpayOrder.amount,
-          currency: "INR", // 🔥 FIXED
-          name: "Food Delivery",
-          description: "Order Payment",
-          order_id: razorpayOrder.id,
+      console.log("Backend response:", response.data);
 
-          handler: async function (paymentResponse) {
-            try {
-              const verifyRes = await axios.post(
-                url + "/api/order/verify",
-                paymentResponse,
-                {headers: {token}},
-              );
-
-              if (verifyRes.data.success) {
-                alert("Payment Successful");
-              } else {
-                alert("Payment verification failed");
-              }
-            } catch (error) {
-              console.log(error);
-            }
-          },
-
-          prefill: {
-            name: data.firstName + " " + data.lastName,
-            email: data.email,
-            contact: data.phone,
-          },
-
-          theme: {
-            color: "#3399cc",
-          },
-        };
-
-        const rzp = new window.Razorpay(options);
-        rzp.open();
-        setData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          street: "",
-          city: "",
-          state: "",
-          zipcode: "",
-          country: "",
-          phone: "",
-        });
-        setCartItems({});
-        navigate("/myorders");
-      } else {
-        alert("Error");
+      if (!response.data.success) {
+        alert(response.data.message || "Unable to create order");
+        return;
       }
+
+      // ----------------------------------------
+      // 4. Get Razorpay order
+      // ----------------------------------------
+
+      const {razorpayOrder} = response.data;
+
+      console.log("Razorpay order:", razorpayOrder);
+
+      // ----------------------------------------
+      // 5. Razorpay Checkout options
+      // ----------------------------------------
+      console.log(import.meta.env.VITE_RAZORPAY_KEY_ID);
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+
+        amount: razorpayOrder.amount,
+
+        currency: razorpayOrder.currency,
+
+        name: "Food Delivery",
+
+        description: "Food Order Payment",
+
+        order_id: razorpayOrder.id,
+
+        // ----------------------------------------
+        // 6. Payment successful
+        // ----------------------------------------
+        // Rememember payment response comes from razorpay checkout
+        handler: async function (paymentResponse) {
+          console.log("Razorpay payment response:", paymentResponse);
+
+          try {
+            // ----------------------------------------
+            // Send payment details to backend
+            // ----------------------------------------
+
+            const verifyResponse = await axios.post(
+              `${url}/api/order/verify`,
+              paymentResponse,
+              {
+                headers: {
+                  token,
+                },
+              },
+            );
+
+            console.log("Verification response:", verifyResponse.data);
+
+            // ----------------------------------------
+            // Payment verified
+            // ----------------------------------------
+
+            if (verifyResponse.data.success) {
+              alert("Payment Successful");
+
+              // Clear form
+              setData({
+                firstName: "",
+                lastName: "",
+                email: "",
+                street: "",
+                city: "",
+                state: "",
+                zipcode: "",
+                country: "",
+                phone: "",
+              });
+
+              // Clear cart
+              setCartItems({});
+
+              // Go to orders
+              navigate("/myorders");
+            } else {
+              alert(
+                verifyResponse.data.message || "Payment verification failed",
+              );
+            }
+          } catch (error) {
+            console.error(
+              "Payment verification error:",
+              error.response?.data || error.message,
+            );
+
+            alert("Payment verification failed");
+          }
+        },
+
+        // ----------------------------------------
+        // Prefill user information
+        // ----------------------------------------
+
+        prefill: {
+          name: `${data.firstName} ${data.lastName}`,
+          email: data.email,
+          contact: data.phone,
+        },
+
+        // ----------------------------------------
+        // Theme
+        // ----------------------------------------
+
+        theme: {
+          color: "#3399cc",
+        },
+
+        // ----------------------------------------
+        // Payment modal
+        // ----------------------------------------
+
+        modal: {
+          ondismiss: function () {
+            console.log("Payment popup closed");
+          },
+        },
+      };
+
+      // ----------------------------------------
+      // 7. Create Razorpay instance
+      // ----------------------------------------
+
+      const razorpay = new window.Razorpay(options);
+
+      // ----------------------------------------
+      // 8. Payment failed event
+      // ----------------------------------------
+
+      razorpay.on("payment.failed", function (response) {
+        console.error("Razorpay payment failed:", response.error);
+
+        alert(`Payment failed: ${response.error.description}`);
+      });
+
+      // ----------------------------------------
+      // 9. Open Razorpay
+      // ----------------------------------------
+
+      razorpay.open();
     } catch (error) {
-      console.log(error);
-      alert("Something went wrong");
+      console.error(
+        "Place order error:",
+        error.response?.data || error.message,
+      );
+
+      alert(error.response?.data?.message || "Something went wrong");
     }
   };
 
@@ -126,17 +259,20 @@ const PlaceOrder = () => {
     <div className="place-order">
       <div className="place-order__header">
         <h1 className="section-title">Checkout</h1>
+
         <p className="section-subtitle">Enter your delivery details below</p>
       </div>
 
       <form className="place-order__form" onSubmit={placeOrder}>
-        {/* ── Delivery form ── */}
+        {/* Delivery Information */}
+
         <div className="place-order__left card">
           <h2 className="place-order__section-label">Delivery Information</h2>
 
           <div className="form-row">
             <div className="form-field">
               <label>First name</label>
+
               <input
                 name="firstName"
                 onChange={onChangeHandler}
@@ -146,8 +282,10 @@ const PlaceOrder = () => {
                 required
               />
             </div>
+
             <div className="form-field">
               <label>Last name</label>
+
               <input
                 name="lastName"
                 onChange={onChangeHandler}
@@ -161,6 +299,7 @@ const PlaceOrder = () => {
 
           <div className="form-field">
             <label>Email address</label>
+
             <input
               name="email"
               onChange={onChangeHandler}
@@ -173,6 +312,7 @@ const PlaceOrder = () => {
 
           <div className="form-field">
             <label>Street address</label>
+
             <input
               name="street"
               onChange={onChangeHandler}
@@ -186,6 +326,7 @@ const PlaceOrder = () => {
           <div className="form-row">
             <div className="form-field">
               <label>City</label>
+
               <input
                 name="city"
                 onChange={onChangeHandler}
@@ -195,8 +336,10 @@ const PlaceOrder = () => {
                 required
               />
             </div>
+
             <div className="form-field">
               <label>State</label>
+
               <input
                 name="state"
                 onChange={onChangeHandler}
@@ -211,6 +354,7 @@ const PlaceOrder = () => {
           <div className="form-row">
             <div className="form-field">
               <label>PIN code</label>
+
               <input
                 name="zipcode"
                 onChange={onChangeHandler}
@@ -220,8 +364,10 @@ const PlaceOrder = () => {
                 required
               />
             </div>
+
             <div className="form-field">
               <label>Country</label>
+
               <input
                 name="country"
                 onChange={onChangeHandler}
@@ -235,6 +381,7 @@ const PlaceOrder = () => {
 
           <div className="form-field">
             <label>Phone number</label>
+
             <input
               name="phone"
               onChange={onChangeHandler}
@@ -246,27 +393,35 @@ const PlaceOrder = () => {
           </div>
         </div>
 
-        {/* ── Order summary ── */}
+        {/* Order Summary */}
+
         <div className="place-order__right">
           <div className="order-summary card">
             <h2 className="place-order__section-label">Order Summary</h2>
 
             <div className="order-summary__row">
               <span>Subtotal</span>
+
               <span>{formatINR(subtotal)}</span>
             </div>
+
             <div className="order-summary__row">
               <span>Delivery fee</span>
+
               <span>{formatINR(DELIVERY_FEE)}</span>
             </div>
+
             <div className="order-summary__divider" />
+
             <div className="order-summary__row order-summary__row--total">
               <b>Total</b>
+
               <b>{formatINR(total)}</b>
             </div>
 
             <div className="order-summary__payment-note">
               <span className="order-summary__lock">🔒</span>
+
               <span>Secure payment via Razorpay / UPI / Cards</span>
             </div>
 
