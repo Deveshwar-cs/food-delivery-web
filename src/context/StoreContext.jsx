@@ -141,7 +141,7 @@ const StoreContextProvider = ({children}) => {
     clearCart,
     getTotalCartAmount,
     getTotalCartItems,
-    url: BASE_URL,
+    url: "https://food-delivery-web-backend-bmjt.onrender.com",
     token,
     setToken,
     loading,
