@@ -6,6 +6,9 @@ const BASE_URL = "http://localhost:5000";
 
 // Axios instance with default config
 const api = axios.create({
+  baseURL: "https://food-delivery-web-backend-bmjt.onrender.com",
+});
+const api2 = axios.create({
   baseURL: BASE_URL,
 });
 
