@@ -1,8 +1,10 @@
-import React from "react";
+import React, {useContext} from "react";
 import "./ExploreMenu.css";
-import {menu_list} from "../../assets/frontend_assets/assets";
+import {StoreContext} from "../../context/UseStoreContext";
 
 const ExploreMenu = ({category, setCategory}) => {
+  const {menu_list} = useContext(StoreContext);
+  console.log(menu_list.data);
   return (
     <section className="explore-menu" id="explore-menu">
       <div className="explore-menu__header">
@@ -15,24 +17,22 @@ const ExploreMenu = ({category, setCategory}) => {
       <div className="explore-menu__track">
         {menu_list.map((item) => (
           <button
-            key={item.menu_name}
+            key={item.name}
             className={`explore-menu__pill ${
-              category === item.menu_name ? "active" : ""
+              category === item.name ? "active" : ""
             }`}
             onClick={() =>
-              setCategory((prev) =>
-                prev === item.menu_name ? "All" : item.menu_name,
-              )
+              setCategory((prev) => (prev === item.name ? "All" : item.name))
             }
           >
             <div
               className={`explore-menu__pill-img ${
-                category === item.menu_name ? "active" : ""
+                category === item.name ? "active" : ""
               }`}
             >
-              <img src={item.menu_image} alt={item.menu_name} />
+              <img src={item.image} alt={item.name} />
             </div>
-            <span>{item.menu_name}</span>
+            <span>{item.name}</span>
           </button>
         ))}
       </div>

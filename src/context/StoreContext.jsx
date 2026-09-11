@@ -18,7 +18,7 @@ const StoreContextProvider = ({children}) => {
   const [food_list, setFoodList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [menu_list, setMenuList] = useState([]);
   // Attach token to every request automatically
   useEffect(() => {
     const interceptor = api.interceptors.request.use((config) => {
@@ -51,6 +51,16 @@ const StoreContextProvider = ({children}) => {
     }
   }, []);
 
+  const fetchCategoryList = useCallback(async () => {
+    try {
+      const {data} = await api.get("/api/category/get");
+      setMenuList(data.data);
+    } catch (err) {
+      setError("Failed to load categories. Please try again.");
+      console.error("fetchFoodList error:", err);
+    }
+  }, []);
+
   const fetchCartFromServer = useCallback(async () => {
     if (!token) return;
     try {
@@ -65,7 +75,8 @@ const StoreContextProvider = ({children}) => {
   useEffect(() => {
     fetchFoodList();
     fetchCartFromServer();
-  }, [fetchFoodList, fetchCartFromServer]);
+    fetchCategoryList();
+  }, [fetchFoodList, fetchCartFromServer, fetchCategoryList]);
 
   const addToCart = useCallback(
     async (itemId) => {
@@ -142,11 +153,14 @@ const StoreContextProvider = ({children}) => {
     getTotalCartAmount,
     getTotalCartItems,
     url: "https://food-delivery-web-backend-bmjt.onrender.com",
+    // url: "http://localhost:5000",
     token,
     setToken,
     loading,
     error,
     refetchFoodList: fetchFoodList,
+    fetchCategoryList,
+    menu_list,
   };
 
   return (
