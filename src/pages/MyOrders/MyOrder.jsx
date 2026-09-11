@@ -45,7 +45,7 @@ const MyOrder = () => {
             <div className="order-items">
               {order.items.map((item, i) => (
                 <div className="order-item" key={i}>
-                  <img src={`${url}/images/${item.image}`} alt={item.name} />
+                  <img src={`${item.image}`} alt={item.name} />
                   <div>
                     <p className="item-name">{item.name}</p>
                     <p>Qty: {item.quantity}</p>

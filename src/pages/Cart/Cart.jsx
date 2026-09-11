@@ -15,6 +15,7 @@ const Cart = () => {
   const total = subtotal + (subtotal > 0 ? DELIVERY_FEE : 0);
 
   const cartList = food_list.filter((item) => cartItems[item._id] > 0);
+  console.log(cartList);
   const isEmpty = cartList.length === 0;
 
   return (
@@ -52,7 +53,7 @@ const Cart = () => {
             {cartList.map((item) => (
               <div className="cart__row" key={item._id}>
                 <img
-                  src={url + "/images/" + item.image}
+                  src={item.image}
                   alt={item.name}
                   className="cart__item-img"
                 />
